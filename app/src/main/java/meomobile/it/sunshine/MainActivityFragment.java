@@ -1,19 +1,30 @@
 package meomobile.it.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +35,12 @@ import java.util.ArrayList;
 public class MainActivityFragment extends Fragment {
 
     public MainActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -59,11 +76,35 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+    }
 
-    public class FetchWeatherTask extends AsyncTask {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_refresh) {
+            Log.d("ciao", "Premuto refresh");
+
+            new FetchWeatherTask().execute("treviso");
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
         @Override
-        protected Object doInBackground(Object[] params) {
+        protected Void doInBackground(String[] params) {
             // Weather!
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -76,8 +117,24 @@ public class MainActivityFragment extends Fragment {
             try {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
+                // Il parametro passato
+                String zipCode = (String)params[0];
+
                 // http://openweathermap.org/API#forecast
-                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+                Uri.Builder builder = new Uri.Builder();
+
+                builder.scheme("http").authority("api.openweathermap.org")
+                        .appendPath("data").appendPath("2.5")
+                        .appendPath("forecast")
+                        .appendPath("daily")
+                        .appendQueryParameter("q",zipCode)
+                        .appendQueryParameter("mode","json")
+                        .appendQueryParameter("units", "metric")
+                        .appendQueryParameter("cnt", "7")
+                        .appendQueryParameter("APPID","15ff5190e23e5749326b7003cbf7d719");
+
+                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7&APPID=15ff5190e23e5749326b7003cbf7d719");
+                URL url = new URL(builder.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -124,9 +181,20 @@ public class MainActivityFragment extends Fragment {
                 }
             }
 
-            Log.d("PlaceholderFragment", forecastJsonStr);
+            //Log.d("PlaceholderFragment", forecastJsonStr);
 
-            return forecastJsonStr;
+            JSONObject jObject;
+            try {
+                jObject = new JSONObject(forecastJsonStr);
+                JSONArray jlist = jObject.getJSONArray("list");
+                JSONObject day = jlist.getJSONObject(0);
+                Log.d("Prova",day.getString("pressure") );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //return forecastJsonStr;
+            return null;
         }
     }
 
