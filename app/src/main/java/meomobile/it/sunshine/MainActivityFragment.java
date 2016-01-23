@@ -14,8 +14,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +79,16 @@ public class MainActivityFragment extends Fragment {
         ListView lv = (ListView) rootView.findViewById(R.id.listview_forecast);
 
         lv.setAdapter(aa);
+
+        // Imposto l'azione sul click
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CharSequence text = "Ho cliccato!!!";
+                Toast toast = Toast.makeText(parent.getContext(), text, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
         return rootView;
     }
