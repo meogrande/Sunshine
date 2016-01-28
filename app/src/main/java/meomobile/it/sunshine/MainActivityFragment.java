@@ -33,6 +33,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -114,10 +116,13 @@ public class MainActivityFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             //Log.d("ciao", "Premuto refresh");
-
             new FetchWeatherTask().execute("treviso");
-
             return true;
+        }
+
+        if (id == R.id.action_settings) {
+            Intent i = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
@@ -175,6 +180,7 @@ public class MainActivityFragment extends Fragment {
         // current day, we're going to take advantage of that to get a nice
         // normalized UTC date for all of our weather.
 
+        Calendar calendar = new GregorianCalendar();
         Time dayTime = new Time();
         dayTime.setToNow();
 
