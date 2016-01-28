@@ -1,5 +1,6 @@
 package meomobile.it.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
@@ -84,9 +85,13 @@ public class MainActivityFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CharSequence text = "Ho cliccato!!!";
+                /*CharSequence text = "Ho cliccato!!!";
                 Toast toast = Toast.makeText(parent.getContext(), text, Toast.LENGTH_SHORT);
-                toast.show();
+                toast.show();*/
+                Intent newIntent = new Intent(getActivity(), DetailActivity.class);
+                String forecast = aa.getItem(position);
+                newIntent.putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(newIntent);
             }
         });
 
@@ -108,7 +113,7 @@ public class MainActivityFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            Log.d("ciao", "Premuto refresh");
+            //Log.d("ciao", "Premuto refresh");
 
             new FetchWeatherTask().execute("treviso");
 
@@ -249,7 +254,7 @@ public class MainActivityFragment extends Fragment {
                         .appendQueryParameter("mode","json")
                         .appendQueryParameter("units", "metric")
                         .appendQueryParameter("cnt", "7")
-                        .appendQueryParameter("APPID","15ff5190e23e5749326b7003cbf7d719");
+                        .appendQueryParameter("APPID","6498c9bbba6235eba0bfb10829f70f48");
 
                 //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7&APPID=15ff5190e23e5749326b7003cbf7d719");
                 URL url = new URL(builder.toString());
