@@ -1,8 +1,10 @@
 package meomobile.it.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -116,6 +118,10 @@ public class MainActivityFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             //Log.d("ciao", "Premuto refresh");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String location = prefs.getString(getString(R.string.pref_location_key),
+                    getString(R.string.pref_location_default));
+            System.out.println(location);
             new FetchWeatherTask().execute("treviso");
             return true;
         }
